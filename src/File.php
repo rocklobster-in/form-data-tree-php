@@ -2,6 +2,8 @@
 
 namespace RockLobsterInc\FormDataTree;
 
+use function RockLobsterInc\Functions\{ strip_whitespaces };
+
 /**
  * Class that represents a standard file data in $_FILES.
  */
@@ -34,17 +36,26 @@ class File implements FileInterface {
 	 */
 	public static function walkToFindSelf( mixed $array ) {
 		if (
-			isset( $array[ 'name' ] ) and is_scalar( $array[ 'name' ] ) and
-			isset( $array[ 'size' ] ) and is_scalar( $array[ 'size' ] ) and
-			isset( $array[ 'tmp_name' ] ) and is_scalar( $array[ 'tmp_name' ] ) and
-			isset( $array[ 'error' ] ) and is_scalar( $array[ 'error' ] )
+			isset( $array[ 'name' ] ) and
+			isset( $array[ 'size' ] ) and
+			isset( $array[ 'tmp_name' ] ) and
+			isset( $array[ 'error' ] )
 		) {
-			return new self( [
-				'name' => $array[ 'name' ],
-				'size' => $array[ 'size' ],
-				'temporaryFilePath' => $array[ 'tmp_name' ],
-				'error' => $array[ 'error' ],
-			] );
+			$name = strip_whitespaces( (string) $array[ 'name' ] );
+			$size = (int) $array[ 'size' ];
+			$tmp_name = strip_whitespaces( (string) $array[ 'tmp_name' ] );
+			$error = (int) $array[ 'error' ];
+
+			if ( '' !== $name and 0 !== $size ) {
+				return new self( [
+					'name' => $name,
+					'size' => $size,
+					'temporaryFilePath' => $tmp_name,
+					'error' => $error,
+				] );
+			} else {
+				return;
+			}
 		}
 
 		if ( is_array( $array ) ) {

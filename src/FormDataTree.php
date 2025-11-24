@@ -2,11 +2,7 @@
 
 namespace RockLobsterInc\FormDataTree;
 
-use function RockLobsterInc\Functions\{
-	array_flatten,
-	strip_whitespaces,
-	exclude_blank
-};
+use function RockLobsterInc\Functions\{ strip_whitespaces, exclude_blank };
 
 /**
  * A class that implements FormDataTreeInterface. Wraps the PHP superglobals.
@@ -36,7 +32,7 @@ class FormDataTree implements FormDataTreeInterface {
 			}
 		}
 
-		$posted_value = array_flatten( $posted_value );
+		$posted_value = (array) $posted_value;
 		$posted_value = strip_whitespaces( $posted_value );
 		$posted_value = exclude_blank( $posted_value );
 
@@ -67,17 +63,7 @@ class FormDataTree implements FormDataTreeInterface {
 			}
 		}
 
-		return array_values( array_filter(
-			array_flatten( $files_tree ),
-			static function ( $item ) {
-				return (
-					$item instanceof FileInterface &&
-					'' !== $item->name() &&
-					0 !== $item->size() &&
-					'' !== $item->temporaryFilePath()
-				);
-			}
-		) );
+		return exclude_blank( $files_tree );
 	}
 
 }
