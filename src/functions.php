@@ -16,7 +16,7 @@ function dissolve_name( string $name ): array {
 		return [];
 	}
 
-	$pattern = '/^([a-z][0-9a-z:_-]+)((?:\[[0-9a-z:_-]+\])*)$/i';
+	$pattern = '/^([a-z][0-9a-z:_-]*)((?:\[[0-9a-z:_-]+\])*)$/i';
 
 	if ( ! preg_match( $pattern, $name, $matches ) ) {
 		return [];
