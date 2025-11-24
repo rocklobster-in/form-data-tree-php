@@ -10,7 +10,7 @@
 	],
 	"require": {
 		"php": ">=7.4",
-		"rocklobsterinc/functions": "v1.x-dev"
+		"rocklobsterinc/functions": "^v1.0.1"
 	},
 	"autoload": {
 		"psr-4": {
