@@ -10,29 +10,24 @@ namespace RockLobsterInc\FormDataTree;
  * @return array Single dimension array of name components.
  */
 function dissolve_name( string $name ): array {
-	$name = trim( $name );
+	$name = str_replace( [ ' ', "\t", "\n", "\r", "\0", "\v" ], '', $name );
 
 	if ( '' === $name ) {
 		return [];
 	}
 
-	$first_bracket = strpos( $name, '[' );
+	$pattern = '/^([a-z][0-9a-z:_-]+)((?:\[[0-9a-z:_-]+\])*)$/i';
 
-	if ( false === $first_bracket ) {
-		return [ $name ];
-	}
-
-	$core = trim( substr( $name, 0, $first_bracket ) );
-
-	if ( '' === $core ) {
+	if ( ! preg_match( $pattern, $name, $matches ) ) {
 		return [];
 	}
 
-	$dimensions = substr( $name, $first_bracket );
+	$core = $matches[ 1 ];
+	$layers = $matches[ 2 ];
 
-	preg_match_all( '/\[(.*?)\]/', $dimensions, $matches );
+	preg_match_all( '/\[([0-9a-z:_-]+)\]/i', $layers, $matches );
 
-	return array_map( 'trim', [ $core, ...$matches[1] ] );
+	return [ $core, ...$matches[ 1 ] ];
 }
 
 
