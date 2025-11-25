@@ -32,7 +32,10 @@ class FormDataTree implements FormDataTreeInterface {
 			}
 		}
 
-		$posted_value = (array) $posted_value;
+		if ( ! is_array( $posted_value ) ) {
+			$posted_value = [ $posted_value ];
+		}
+
 		$posted_value = strip_whitespaces( $posted_value );
 		$posted_value = exclude_blank( $posted_value );
 
@@ -63,7 +66,13 @@ class FormDataTree implements FormDataTreeInterface {
 			}
 		}
 
-		return exclude_blank( $files_tree );
+		if ( ! is_array( $files_tree ) ) {
+			$files_tree = [ $files_tree ];
+		}
+
+		$files_tree = exclude_blank( $files_tree );
+
+		return $files_tree;
 	}
 
 }
