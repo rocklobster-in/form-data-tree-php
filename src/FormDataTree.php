@@ -2,11 +2,7 @@
 
 namespace RockLobsterInc\FormDataTree;
 
-use function RockLobsterInc\Functions\{
-	array_flatten,
-	strip_whitespaces,
-	exclude_blank
-};
+use function RockLobsterInc\Functions\{ strip_whitespaces, exclude_blank };
 
 /**
  * A class that implements FormDataTreeInterface. Wraps the PHP superglobals.
@@ -36,7 +32,10 @@ class FormDataTree implements FormDataTreeInterface {
 			}
 		}
 
-		$posted_value = array_flatten( $posted_value );
+		if ( ! is_array( $posted_value ) ) {
+			$posted_value = [ $posted_value ];
+		}
+
 		$posted_value = strip_whitespaces( $posted_value );
 		$posted_value = exclude_blank( $posted_value );
 
@@ -57,7 +56,7 @@ class FormDataTree implements FormDataTreeInterface {
 			return [];
 		}
 
-		$files_tree = File::buildTreeFromSuperglobal();
+		$files_tree = File::buildTree();
 
 		while ( $next = array_shift( $name_parts ) ) {
 			if ( isset( $files_tree[ $next ] ) ) {
@@ -67,17 +66,13 @@ class FormDataTree implements FormDataTreeInterface {
 			}
 		}
 
-		return array_values( array_filter(
-			array_flatten( $files_tree ),
-			static function ( $item ) {
-				return (
-					$item instanceof FileInterface &&
-					'' !== $item->name() &&
-					0 !== $item->size() &&
-					'' !== $item->temporaryFilePath()
-				);
-			}
-		) );
+		if ( ! is_array( $files_tree ) ) {
+			$files_tree = [ $files_tree ];
+		}
+
+		$files_tree = exclude_blank( $files_tree );
+
+		return $files_tree;
 	}
 
 }

@@ -2,6 +2,8 @@
 
 namespace RockLobsterInc\FormDataTree;
 
+use function RockLobsterInc\Functions\{ strip_whitespaces };
+
 /**
  * Class that represents a standard file data in $_FILES.
  */
@@ -18,7 +20,7 @@ class File implements FileInterface {
 	 *
 	 * @param array $properties Properties of the object.
 	 */
-	public function __construct( array $properties = [] ) {
+	private function __construct( array $properties = [] ) {
 		$this->name = $properties[ 'name' ];
 		$this->size = $properties[ 'size' ];
 		$this->temporaryFilePath = $properties[ 'temporaryFilePath' ];
@@ -32,19 +34,28 @@ class File implements FileInterface {
 	 *
 	 * @param mixed $array Where to walk.
 	 */
-	public static function walkToFindSelf( mixed $array ) {
+	private static function walkToFindSelf( mixed $array ) {
 		if (
-			isset( $array[ 'name' ] ) and is_scalar( $array[ 'name' ] ) and
-			isset( $array[ 'size' ] ) and is_scalar( $array[ 'size' ] ) and
-			isset( $array[ 'tmp_name' ] ) and is_scalar( $array[ 'tmp_name' ] ) and
-			isset( $array[ 'error' ] ) and is_scalar( $array[ 'error' ] )
+			isset( $array[ 'name' ] ) and
+			isset( $array[ 'size' ] ) and
+			isset( $array[ 'tmp_name' ] ) and
+			isset( $array[ 'error' ] )
 		) {
-			return new self( [
-				'name' => $array[ 'name' ],
-				'size' => $array[ 'size' ],
-				'temporaryFilePath' => $array[ 'tmp_name' ],
-				'error' => $array[ 'error' ],
-			] );
+			$name = strip_whitespaces( (string) $array[ 'name' ] );
+			$size = (int) $array[ 'size' ];
+			$tmp_name = strip_whitespaces( (string) $array[ 'tmp_name' ] );
+			$error = (int) $array[ 'error' ];
+
+			if ( '' !== $name and 0 !== $size ) {
+				return new self( [
+					'name' => $name,
+					'size' => $size,
+					'temporaryFilePath' => $tmp_name,
+					'error' => $error,
+				] );
+			} else {
+				return;
+			}
 		}
 
 		if ( is_array( $array ) ) {
@@ -59,14 +70,16 @@ class File implements FileInterface {
 	 *
 	 * @return array Tree created based on $_FILES.
 	 */
-	public static function buildTreeFromSuperglobal(): array {
+	public static function buildTree(): array {
 		static $output = [];
 
 		if ( ! empty( $output ) ) {
 			return $output;
 		}
 
-		foreach ( $_FILES as $name => $props ) {
+		$original = $_FILES;
+
+		foreach ( $original as $name => $props ) {
 			$in_process_array = [];
 
 			foreach ( $props as $key => $value ) {
