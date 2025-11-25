@@ -20,7 +20,7 @@ class File implements FileInterface {
 	 *
 	 * @param array $properties Properties of the object.
 	 */
-	public function __construct( array $properties = [] ) {
+	private function __construct( array $properties = [] ) {
 		$this->name = $properties[ 'name' ];
 		$this->size = $properties[ 'size' ];
 		$this->temporaryFilePath = $properties[ 'temporaryFilePath' ];
@@ -34,7 +34,7 @@ class File implements FileInterface {
 	 *
 	 * @param mixed $array Where to walk.
 	 */
-	public static function walkToFindSelf( mixed $array ) {
+	private static function walkToFindSelf( mixed $array ) {
 		if (
 			isset( $array[ 'name' ] ) and
 			isset( $array[ 'size' ] ) and
@@ -70,14 +70,16 @@ class File implements FileInterface {
 	 *
 	 * @return array Tree created based on $_FILES.
 	 */
-	public static function buildTreeFromSuperglobal(): array {
+	public static function buildTree(): array {
 		static $output = [];
 
 		if ( ! empty( $output ) ) {
 			return $output;
 		}
 
-		foreach ( $_FILES as $name => $props ) {
+		$original = $_FILES;
+
+		foreach ( $original as $name => $props ) {
 			$in_process_array = [];
 
 			foreach ( $props as $key => $value ) {

@@ -53,7 +53,7 @@ class FormDataTree implements FormDataTreeInterface {
 			return [];
 		}
 
-		$files_tree = File::buildTreeFromSuperglobal();
+		$files_tree = File::buildTree();
 
 		while ( $next = array_shift( $name_parts ) ) {
 			if ( isset( $files_tree[ $next ] ) ) {
