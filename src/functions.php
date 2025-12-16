@@ -2,6 +2,8 @@
 
 namespace RockLobsterInc\FormDataTree;
 
+use function RockLobsterInc\Functions\{ strip_whitespaces };
+
 
 /**
  * Returns components of the given name.
@@ -10,13 +12,12 @@ namespace RockLobsterInc\FormDataTree;
  * @return array Single dimension array of name components.
  */
 function dissolve_name( string $name ): array {
-	$name = str_replace( [ ' ', "\t", "\n", "\r", "\0", "\v" ], '', $name );
+	$name = strip_whitespaces( $name );
 
-	if ( '' === $name ) {
-		return [];
-	}
+	$s = '[\x09-\x0D\x20\xA0\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}]*';
 
-	$pattern = '/^([a-z][0-9a-z:_-]*)((?:\[[a-z][0-9a-z:_-]*\])*)$/i';
+	$pattern = '/^([a-z][0-9a-z:_-]*)' .
+		'((?:\[' . $s . '[a-z][0-9a-z:_-]*' . $s . '\])*)$/iu';
 
 	if ( ! preg_match( $pattern, $name, $matches ) ) {
 		return [];
@@ -25,7 +26,11 @@ function dissolve_name( string $name ): array {
 	$core = $matches[ 1 ];
 	$layers = $matches[ 2 ];
 
-	preg_match_all( '/\[([a-z][0-9a-z:_-]*)\]/i', $layers, $matches );
+	preg_match_all(
+		'/\[' . $s . '([a-z][0-9a-z:_-]*)' . $s . '\]/iu',
+		$layers,
+		$matches
+	);
 
 	return [ $core, ...$matches[ 1 ] ];
 }
