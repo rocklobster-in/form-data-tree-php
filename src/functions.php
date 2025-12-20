@@ -8,7 +8,7 @@ use function RockLobsterInc\Functions\{ strip_whitespaces };
 /**
  * Returns components of the given name.
  *
- * @param string $name Field name, such as 'abc', 'abc[de]', or 'abc[]'.
+ * @param string $name Field name, such as 'abc' or 'abc[de]'.
  * @return array Single dimension array of name components.
  */
 function dissolve_name( string $name ): array {
