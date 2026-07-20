@@ -30,7 +30,12 @@ function dissolve_name( string $name ): array {
 
 	preg_match_all( '/\[(.*?)\]/u', $layers, $matches );
 
-	$layers = array_map( 'strip_whitespaces', $matches[ 1 ] );
+	$layers = array_map(
+	    static function ( string $item ) {
+			return strip_whitespaces( $item );
+		},
+		$matches[ 1 ]
+	);
 
 	return [ $core, ...$layers ];
 }
