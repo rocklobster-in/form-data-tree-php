@@ -9,6 +9,25 @@ use function RockLobsterInc\Functions\{ strip_whitespaces, exclude_blank };
  */
 class FormDataTree implements FormDataTreeInterface {
 
+   	/**
+	 * Data origin.
+	 */
+    private array $origin;
+
+
+   	/**
+	 * Constructor.
+	 *
+	 * @param array $origin Optional data origin.
+	 */
+    public function __construct( array $origin = [] ) {
+        $this->origin = [
+            'post' => $origin[ 'post' ] ?? $_POST,
+            'files' => $origin[ 'files' ] ?? File::buildTree(),
+        ];
+    }
+
+
 	/**
 	 * Returns the values associated with a given field name.
 	 *
@@ -22,7 +41,7 @@ class FormDataTree implements FormDataTreeInterface {
 			return [];
 		}
 
-		$posted_value = $_POST;
+		$posted_value = $this->origin[ 'post' ];
 
 		while ( $next = array_shift( $name_parts ) ) {
 			if (
@@ -59,7 +78,7 @@ class FormDataTree implements FormDataTreeInterface {
 			return [];
 		}
 
-		$files_tree = File::buildTree();
+		$files_tree = $this->origin[ 'files' ];
 
 		while ( $next = array_shift( $name_parts ) ) {
 			if (
