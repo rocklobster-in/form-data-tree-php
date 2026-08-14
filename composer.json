@@ -26,5 +26,11 @@
     "files": [
       "src/functions.php"
     ]
+  },
+  "scripts": {
+    "lint": "parallel-lint src/"
+  },
+  "require-dev": {
+    "php-parallel-lint/php-parallel-lint": "^1.4"
   }
 }
